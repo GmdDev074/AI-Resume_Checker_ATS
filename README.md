@@ -2,25 +2,66 @@
 
 [![Repository](https://img.shields.io/badge/GitHub-GmdDev074%2FAI--Resume__Checker__ATS-blue)](https://github.com/GmdDev074/AI-Resume_Checker_ATS)
 
-**Final Year Project** — A local, modular platform that analyzes PDF resumes against job descriptions, scores ATS compatibility, measures semantic job fit, highlights skill gaps, and exports professional PDF reports. **No paid APIs** (no OpenAI/Gemini); everything runs on your machine.
+**Final Year Project** — This repository contains the working implementation of the proposal described below.
+
+---
+
+## Project overview (proposal)
+
+### Project title
+
+**AI-Powered Resume Analyzer and Job Matching System**
+
+### Project summary
+
+This project develops an intelligent AI-based Resume Analyzer that automates the screening and evaluation of resumes. The system allows users to upload a PDF resume and a job description. It then extracts key information (skills, experience, education), calculates an ATS compatibility score, identifies skill gaps, and provides personalized improvement suggestions.
+
+The project addresses the real-world problem of time-consuming and biased manual resume screening in recruitment. It provides significant academic and industry value by demonstrating practical applications of NLP and AI in HR technology, helping both job seekers and recruiters.
+
+### Literature review
+
+Recent advancements in NLP and AI have significantly improved automated resume screening. This project builds upon existing work by integrating PDF parsing, skill extraction, semantic matching with job descriptions, and a user-friendly web interface.
+
+**Key references:**
+
+- JayaPriya J., et al. (2025). *“Smart AI Resume Analyzer,”* International Journal of Scientific Research in Science, Engineering and Technology.
+- Tian, R. et al. (2023). *“A Machine Learning-Based HR Recruitment System: Using LSA, BERT and SVM.”*
+- Heakl, A. et al. (2024). *“ResumeAtlas: Revisiting Resume Classification with Large-Scale Datasets and Large Language Models,”* arXiv preprint.
+
+### Methodology
+
+| Area | Planned approach |
+|------|------------------|
+| **Data acquisition** | Public resume datasets from Kaggle (e.g., Resume Dataset by Snehaan Bhawal) and synthetic/job description datasets from Hugging Face. |
+| **Technologies** | Python; PyMuPDF/PyPDF2 (PDF parsing); spaCy or Gemini API (NLP & skill extraction); scikit-learn (matching/scoring); Streamlit (web application). |
+| **Evaluation** | Accuracy of skill extraction; cosine similarity scores for job matching; user testing for interface usability; comparison with baseline keyword-matching methods. |
+
+### Specific details and requirements
+
+- No additional hardware required.
+- Developed as a **web application using Streamlit**.
+- Focus on **ethical AI** (bias reduction in recommendations).
+
+> **Implementation note:** This codebase implements the proposal using **PyMuPDF**, **spaCy** (optional), **Sentence Transformers** (`all-MiniLM-L6-v2`) with **scikit-learn** cosine similarity, and **no paid Gemini API**. Kaggle-style evaluation data and keyword baselines are included. See [resume_analyzer/docs/THESIS_ALIGNMENT.md](resume_analyzer/docs/THESIS_ALIGNMENT.md) for proposal-vs-build mapping.
 
 ---
 
 ## Table of contents
 
-1. [Main purpose](#main-purpose)
-2. [What we have achieved](#what-we-have-achieved)
-3. [Technology stack](#technology-stack)
-4. [Models used](#models-used)
-5. [Project structure](#project-structure)
-6. [Clone this repository](#clone-this-repository)
-7. [Installation](#installation)
-8. [How to run](#how-to-run)
-9. [Usage workflow](#usage-workflow)
-10. [Scoring methodology](#scoring-methodology)
-11. [Evaluation & thesis docs](#evaluation--thesis-docs)
-12. [Troubleshooting](#troubleshooting)
-13. [Contributing & license](#contributing--license)
+1. [Project overview (proposal)](#project-overview-proposal)
+2. [Main purpose](#main-purpose)
+3. [What we have achieved](#what-we-have-achieved)
+4. [Technology stack](#technology-stack)
+5. [Models used](#models-used)
+6. [Project structure](#project-structure)
+7. [Clone this repository](#clone-this-repository)
+8. [Installation](#installation)
+9. [How to run](#how-to-run)
+10. [Usage workflow](#usage-workflow)
+11. [Scoring methodology](#scoring-methodology)
+12. [Evaluation & thesis docs](#evaluation--thesis-docs)
+13. [Troubleshooting](#troubleshooting)
+14. [Contributing & license](#contributing--license)
 
 ---
 
