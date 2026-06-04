@@ -2,6 +2,8 @@
 
 This folder contains the full application. **Start with the [root README](../README.md)** for purpose, achievements, clone/run instructions, stack, models, troubleshooting, and repository structure.
 
+**License:** Proprietary — see [LICENSE](../LICENSE). Use requires permission from the copyright holder.
+
 ## Quick run
 
 From the repository root:

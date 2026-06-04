@@ -1,6 +1,7 @@
 # AI-Powered Resume Analyzer & Job Matching System (ATS)
 
 [![Repository](https://img.shields.io/badge/GitHub-GmdDev074%2FAI--Resume__Checker__ATS-blue)](https://github.com/GmdDev074/AI-Resume_Checker_ATS)
+[![License](https://img.shields.io/badge/License-Proprietary-red)](LICENSE)
 
 **Final Year Project** — This repository contains the working implementation of the proposal described below.
 
@@ -503,9 +504,26 @@ Sign in via GitHub CLI (`gh auth login`), SSH keys, or Personal Access Token whe
 
 ## Contributing & license
 
-Educational / Final Year Project use. Fork the repo, open issues, or submit pull requests on GitHub.
+### License
 
-**Author / maintainer:** [GmdDev074](https://github.com/GmdDev074)  
+This project is **proprietary and protected by copyright**. See the [LICENSE](LICENSE) file.
+
+| Allowed without permission | Requires written permission |
+|--------------------------|---------------------------|
+| Viewing the repo on GitHub | Copying or redistributing code |
+| Academic review / citation with attribution | Commercial or product use |
+| Reporting issues or bugs | Forking for your own project |
+| | Modifying and publishing derivatives |
+| | Using in another thesis, startup, or client work |
+
+**All rights reserved** © 2025 [GmdDev074](https://github.com/GmdDev074).
+
+To request permission to use, adapt, or distribute this software, open an issue on GitHub or contact the maintainer via their profile.
+
+### Contributing
+
+Pull requests and suggestions are welcome **only with the maintainer’s approval**. By contributing, you agree that your contributions may be used under the same proprietary terms unless otherwise agreed in writing.
+
 **Repository:** https://github.com/GmdDev074/AI-Resume_Checker_ATS
 
 ---
