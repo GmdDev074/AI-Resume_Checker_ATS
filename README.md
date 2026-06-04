@@ -45,13 +45,15 @@ Recent advancements in NLP and AI have significantly improved automated resume s
 
 > **Implementation note:** This codebase implements the proposal using **PyMuPDF**, **spaCy** (optional), **Sentence Transformers** (`all-MiniLM-L6-v2`) with **scikit-learn** cosine similarity, and **no paid Gemini API**. Kaggle-style evaluation data and keyword baselines are included. See [resume_analyzer/docs/THESIS_ALIGNMENT.md](resume_analyzer/docs/THESIS_ALIGNMENT.md) for proposal-vs-build mapping.
 
+**Living progress tracker:** [PROJECT_STATUS.md](PROJECT_STATUS.md) — edit this file when requirements change.
+
 ---
 
 ## Table of contents
 
 1. [Project overview (proposal)](#project-overview-proposal)
-2. [Main purpose](#main-purpose)
-3. [What we have achieved](#what-we-have-achieved)
+2. [Requirements progress](#requirements-progress)
+3. [Main purpose](#main-purpose)
 4. [Technology stack](#technology-stack)
 5. [Models used](#models-used)
 6. [Project structure](#project-structure)
@@ -63,6 +65,53 @@ Recent advancements in NLP and AI have significantly improved automated resume s
 12. [Evaluation & thesis docs](#evaluation--thesis-docs)
 13. [Troubleshooting](#troubleshooting)
 14. [Contributing & license](#contributing--license)
+
+---
+
+## Requirements progress
+
+Track proposal compliance in **[PROJECT_STATUS.md](PROJECT_STATUS.md)** (easy to update). Summary as of **2025-06-05**:
+
+| Status | Count | Meaning |
+|--------|-------|---------|
+| ✅ Achieved | 21 | Meets proposal intent in code/docs |
+| 🟡 Partial | 5 | Started; needs data, study, or depth |
+| ⬜ Remaining | 2 | Thesis / evaluation tasks not done in repo |
+| ➖ Not planned | 3 | Documented deviation (e.g. no Gemini/LSA) |
+
+### ✅ Achieved (high level)
+
+| Area | Done |
+|------|------|
+| **Core product** | PDF upload, JD input, skill/experience/education extraction, ATS score, skill gaps, recommendations, Streamlit app |
+| **Matching** | Hybrid match (skills + MiniLM cosine); keyword baseline for comparison |
+| **Extras** | Multi-resume ranking, PDF reports, SQLite history, FastAPI, dashboard, tests |
+| **Evaluation (automated)** | Precision/recall/F1 on 55 labeled samples; `run_evaluation.py` |
+| **Ethics & docs** | ETHICAL_AI.md, THESIS_ALIGNMENT.md, proprietary LICENSE |
+
+### 🟡 Partially achieved
+
+| Item | Gap | Next step |
+|------|-----|-----------|
+| **Kaggle dataset** | Import script exists; full CSV not in repo | Download [Resume Dataset](https://www.kaggle.com/datasets/gauravduttakiit/resume-dataset) → `data/evaluation/kaggle/Resume.csv` → run `import_kaggle_csv.py` |
+| **Hugging Face job data** | Only local sample JSON | Add more JDs or HF download script |
+| **Labeled data scale** | 55 samples vs large Kaggle corpus | Expand labels; manual verify 10–20 rows |
+| **spaCy NLP** | Optional, not required to run | Install and mention in thesis appendix |
+| **Ethical AI** | Principles documented | Add usability/bias study results in thesis |
+
+### ⬜ Remaining (thesis / non-code)
+
+| Item | Action |
+|------|--------|
+| **User usability testing** | Run 5–10 user tasks + questionnaire; report in thesis |
+| **Deep comparison with Tian / ResumeAtlas** | Related-work table + discussion (no full replication required) |
+
+### ➖ Deliberate deviations (document in thesis)
+
+- **Gemini API** → local Sentence Transformers (no cost, privacy)  
+- **LSA + BERT + SVM** → MiniLM embeddings + scikit-learn cosine + keyword baseline  
+
+**To update:** edit tables in [PROJECT_STATUS.md](PROJECT_STATUS.md), then adjust counts and this section if needed.
 
 ---
 
@@ -82,39 +131,6 @@ Hiring teams and job seekers spend significant time manually comparing resumes t
 | Stay thesis-ready | Evaluation scripts (precision/recall/F1), baseline comparison, documentation |
 
 The application is designed as a **clean, layered codebase** suitable for demonstration, extension, and academic evaluation—not as a black-box cloud API.
-
----
-
-## What we have achieved
-
-### Core product features
-
-- **Streamlit dashboard** — Dashboard, Upload, Analysis, Reports (professional light UI)
-- **PDF resume upload** — Single or multiple PDFs, size validation, corrupt-file handling
-- **Job description matching** — Paste custom JD or select sample roles
-- **Structured extraction** — Skills, education, experience, contact (regex + skill database + optional spaCy)
-- **ATS compatibility score** — Weighted breakdown (skills, experience, education, completeness, formatting)
-- **Semantic job match** — Sentence Transformer embeddings + scikit-learn cosine similarity
-- **Skill gap analysis** — Matched/missing skills, pie chart, searchable skill database
-- **Recommendations** — Actionable ATS and career suggestions
-- **Multi-resume comparison** — Rank candidates by match score
-- **PDF report export** — ReportLab-generated reports with scores and skills
-- **SQLite persistence** — Analysis history and report metadata
-- **Optional REST API** — FastAPI endpoint for programmatic analysis
-
-### Research & thesis alignment
-
-- **Keyword-only baseline matcher** for comparison with hybrid (embedding + skills) approach
-- **Evaluation pipeline** — 55 labeled samples, metrics written to `latest_report.json`
-- **Documentation** — Thesis alignment, ethical AI, database schema
-- **Unit tests** — Parser, extraction, ATS, matching, evaluation (`pytest`)
-
-### Engineering quality
-
-- Modular **service-oriented** layout (UI → pipeline → services)
-- Type hints and docstrings on public APIs
-- Graceful **fallbacks** if spaCy or Sentence Transformers are unavailable (reduced accuracy)
-- `.gitignore` excludes `venv/`, databases, generated PDFs, and caches
 
 ---
 

@@ -2,6 +2,8 @@
 
 This document maps the **written proposal** to the **implemented system** for academic reporting.
 
+> **Quick status:** See [PROJECT_STATUS.md](../../PROJECT_STATUS.md) for ✅ / 🟡 / ⬜ checklists you can update during the project.
+
 ## Abstract and objectives — Aligned
 
 | Objective | Implementation |

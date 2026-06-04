@@ -4,6 +4,8 @@ This folder contains the full application. **Start with the [root README](../REA
 
 **License:** Proprietary — see [LICENSE](../LICENSE). Use requires permission from the copyright holder.
 
+**Requirements progress:** [PROJECT_STATUS.md](../PROJECT_STATUS.md)
+
 ## Quick run
 
 From the repository root:
