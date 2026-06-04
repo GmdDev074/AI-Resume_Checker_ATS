@@ -1,0 +1,20 @@
+SARA KHAN
+sara.khan@email.com | +92 321 9876543
+github.com/sarakhan
+
+PROFESSIONAL SUMMARY
+Full stack developer with 4 years building React and Node.js applications.
+
+TECHNICAL SKILLS
+React, TypeScript, Node.js, Express.js, MongoDB, PostgreSQL, HTML, CSS, Git, Docker, Agile
+
+WORK EXPERIENCE
+Full Stack Developer | WebWorks Inc | 2021 - Present
+- Developed customer portals with React and REST APIs
+- Deployed services using Docker
+
+Software Engineer | StartupXYZ | 2020 - 2021
+
+EDUCATION
+Master of Science in Software Engineering
+NUST — 2020

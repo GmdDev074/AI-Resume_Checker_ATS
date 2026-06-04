@@ -1,0 +1,27 @@
+[
+  {
+    "id": "job_001",
+    "title": "Junior Python Developer",
+    "description": "We are hiring a Junior Python Developer to build backend APIs and data pipelines. Requirements: Python, FastAPI, Flask, REST APIs, SQL, PostgreSQL, Git, Docker basics, unit testing, and problem-solving skills. Nice to have: AWS, Pandas, and Agile experience."
+  },
+  {
+    "id": "job_002",
+    "title": "Android Developer",
+    "description": "Looking for an Android Developer with Kotlin, Android SDK, MVVM, Firebase, REST APIs, Git, and CI/CD. Experience with Jetpack Compose and Room database is a plus. Minimum 2 years mobile development experience required."
+  },
+  {
+    "id": "job_003",
+    "title": "Machine Learning Engineer",
+    "description": "Seeking ML Engineer proficient in Python, TensorFlow, PyTorch, Scikit-learn, Pandas, NumPy, NLP, and model deployment. Experience with Docker, Kubernetes, and cloud platforms (AWS/GCP) preferred. Master's degree in CS or related field is a plus."
+  },
+  {
+    "id": "job_004",
+    "title": "Full Stack Web Developer",
+    "description": "Full Stack role using React, TypeScript, Node.js, Express.js, MongoDB, PostgreSQL, HTML, CSS, Git, and REST. Knowledge of Next.js, Docker, and Agile/Scrum methodologies required. 3+ years professional experience."
+  },
+  {
+    "id": "job_005",
+    "title": "DevOps Engineer",
+    "description": "DevOps Engineer needed for CI/CD pipelines, Docker, Kubernetes, Terraform, Ansible, Linux, Jenkins, GitHub Actions, AWS, monitoring, and infrastructure as code. Strong scripting in Python or Bash required."
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "skill_extraction": {
+    "precision": 0.986,
+    "recall": 0.9972,
+    "f1_score": 0.9916,
+    "samples": 55,
+    "tp": 353,
+    "fp": 5,
+    "fn": 1
+  },
+  "matching_comparisons": [
+    {
+      "semantic_match_score": 77.4,
+      "keyword_baseline_score": 83.3,
+      "semantic_similarity_pct": 68.4,
+      "improvement_over_baseline": -5.9
+    }
+  ],
+  "notes": [
+    "Semantic matching uses Sentence Transformers (all-MiniLM-L6-v2) + scikit-learn cosine similarity.",
+    "Keyword baseline uses exact skill overlap only (no embeddings).",
+    "Skill labels dataset: all_labeled_resumes.json (55 samples).",
+    "Kaggle CSV import: scripts/import_kaggle_csv.py"
+  ]
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "sample_01",
+    "text": "Skills: Python, FastAPI, Flask, Django, SQL, PostgreSQL, Git, Docker, REST, Agile",
+    "expected_skills": ["Python", "FastAPI", "Flask", "Django", "SQL", "PostgreSQL", "Git", "Docker", "REST", "Agile"]
+  },
+  {
+    "id": "sample_02",
+    "text": "Kotlin, Android, Firebase, MVVM, REST APIs, Git, CI/CD experience",
+    "expected_skills": ["Kotlin", "Android", "Firebase", "MVVM", "Git"]
+  },
+  {
+    "id": "sample_03",
+    "text": "React, TypeScript, Node.js, MongoDB, HTML, CSS, Docker, Agile, Scrum",
+    "expected_skills": ["React", "TypeScript", "Node.js", "MongoDB", "HTML", "CSS", "Docker", "Agile", "Scrum"]
+  },
+  {
+    "id": "sample_04",
+    "text": "Machine Learning, Python, TensorFlow, PyTorch, Pandas, NumPy, NLP",
+    "expected_skills": ["Machine Learning", "Python", "TensorFlow", "PyTorch", "Pandas", "NumPy", "NLP"]
+  },
+  {
+    "id": "sample_05",
+    "text": "DevOps, Docker, Kubernetes, Jenkins, AWS, Linux, Terraform, Python",
+    "expected_skills": ["DevOps", "Docker", "Kubernetes", "Jenkins", "AWS", "Linux", "Terraform", "Python"]
+  }
+]

@@ -1,0 +1,16 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+*.db
+resume_analyzer/generated_reports/
+*.pdf
+!resume_analyzer/data/sample_resumes/
+.DS_Store
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/

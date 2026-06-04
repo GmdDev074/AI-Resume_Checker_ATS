@@ -1,0 +1,21 @@
+JOHN AHMED
+Email: john.ahmed@email.com | Phone: +92 300 1234567
+LinkedIn: linkedin.com/in/johnahmed | GitHub: github.com/johnahmed
+
+SUMMARY
+Computer Science graduate with 3 years of experience in Python backend development and REST APIs.
+
+SKILLS
+Python, FastAPI, Flask, Django, SQL, PostgreSQL, Git, Docker, REST, Agile, Pandas, NumPy, Linux
+
+EXPERIENCE
+Software Developer — Tech Solutions Lahore (2022 – Present)
+• Built REST APIs using FastAPI and PostgreSQL
+• Deployed services with Docker and GitHub Actions
+
+Junior Developer — CodeHub (2021 – 2022)
+• Maintained Flask applications and unit tests
+
+EDUCATION
+Bachelor of Computer Science
+University of Lahore — 2025
