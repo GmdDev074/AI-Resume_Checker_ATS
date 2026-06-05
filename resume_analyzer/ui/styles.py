@@ -328,6 +328,66 @@ def _light_rules() -> str:
         border-left: 3px solid #1d4ed8; border-radius: 8px;
         padding: 1rem 1.15rem; margin: 0.85rem 0; color: #334155;
     }
+
+    .survey-panel-meta {
+        margin-bottom: 0.65rem;
+    }
+    .survey-panel-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 0.25rem;
+    }
+    .survey-panel-desc {
+        font-size: 0.82rem;
+        color: #64748b;
+        margin-bottom: 0.45rem;
+        line-height: 1.45;
+    }
+    .survey-scale-hint {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #475569;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 0.45rem 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .survey-field-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+        margin-bottom: 0.35rem;
+    }
+    .survey-field-table th {
+        background: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        letter-spacing: 0.05em;
+        padding: 0.55rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        text-align: left;
+    }
+    .survey-field-table td {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        vertical-align: middle;
+    }
+    div[data-testid="stForm"] {
+        margin-top: 0.5rem;
+    }
+    div[data-testid="stForm"] [data-testid="stVerticalBlockBorderWrapper"] {
+        margin-bottom: 1rem;
+    }
     .profile-card {
         background: #ffffff; border: 1px solid #e2e8f0;
         border-radius: 10px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;

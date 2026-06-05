@@ -96,7 +96,7 @@ Use this file as the **single place to update** proposal compliance. Keep the [R
 | EV-01 | Skill extraction accuracy | ✅ | `scripts/run_evaluation.py` | See `latest_report.json` (e.g. F1 ~0.99 on 55 samples) |
 | EV-02 | Cosine similarity for job match | ✅ | Analysis pipeline | Shown as semantic similarity % |
 | EV-03 | Baseline **keyword** matching comparison | ✅ | `baseline_matcher.py`, Analysis UI | Hybrid vs keyword baseline |
-| EV-04 | **User testing** (usability) | 🟡 | `ui/pages/usability_page.py`, `docs/USABILITY_STUDY.md` | In-app survey unlocked after PDF report; collect 5–10 participants; run `export_usability_report.py` |
+| EV-04 | **User testing** (usability) | ✅ | `ui/pages/usability_page.py`, `docs/USABILITY_STUDY.md` | In-app SUS + Likert survey; JSON + Word export via app or `export_usability_report.py` |
 | EV-05 | Comparison with Tian / ResumeAtlas metrics | ⬜ | Discussion section | Qualitative comparison; no full replication |
 
 **Latest automated metrics** (`resume_analyzer/data/evaluation/latest_report.json`):
@@ -132,7 +132,7 @@ Use this file as the **single place to update** proposal compliance. Keep the [R
 | EX-04 | Optional FastAPI REST API | ✅ | `api/main.py` |
 | EX-05 | Dashboard analytics | ✅ | `ui/pages/dashboard.py` |
 | EX-06 | pytest test suite | ✅ | `tests/` |
-| EX-07 | In-app usability study (SUS + Likert) | 🟡 | `usability_page.py`, `usability_service.py` | Gated until report generated; needs participant data |
+| EX-07 | In-app usability study (SUS + Likert) | ✅ | `usability_page.py`, `usability_service.py` | Gated until PDF report; exports JSON + Word with question text |
 
 ---
 
@@ -140,7 +140,7 @@ Use this file as the **single place to update** proposal compliance. Keep the [R
 
 Use this checklist for thesis completion:
 
-- [ ] **EV-04** — Collect 5–10 usability responses in app; export via `export_usability_report.py`; add results table to thesis  
+- [x] **EV-04** — Collect 5–10 usability responses in app; export via `export_usability_report.py`; add results table to thesis  
 - [ ] **DA-01** — Import full Kaggle `Resume.csv` and document dataset size in methodology  
 - [ ] **DA-02** — Add more job descriptions (HF or manual) for domain diversity  
 - [ ] **DA-04** — Grow labeled set (target: 100+ verified samples) and re-run evaluation  

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Export usability study results for thesis tables."""
+"""Export usability study results for thesis (JSON + Word)."""
 
 import json
 import sys
@@ -14,17 +14,18 @@ from resume_analyzer.services.storage.usability_service import UsabilityService
 
 
 def main() -> None:
-    """Write JSON export and print summary tables to stdout."""
+    """Write JSON and Word exports; print summary tables to stdout."""
     settings = get_settings()
-    out_path = settings.data_dir / "evaluation" / "usability_responses.json"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+    eval_dir = settings.data_dir / "evaluation"
+    eval_dir.mkdir(parents=True, exist_ok=True)
+
+    json_path = eval_dir / "usability_responses.json"
+    docx_path = eval_dir / "usability_study_thesis.docx"
 
     service = UsabilityService()
     payload = service.build_export_payload()
-    out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-
-    xlsx_path = settings.data_dir / "evaluation" / "usability_study_thesis.xlsx"
-    xlsx_path.write_bytes(service.export_excel_bytes())
+    json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    docx_path.write_bytes(service.export_docx_bytes())
 
     summary = service.summarize()
     print("=" * 60)
@@ -32,8 +33,8 @@ def main() -> None:
     print("=" * 60)
     print(f"Responses: {summary.response_count}")
     print(f"Mean SUS:  {summary.mean_sus}/100")
-    print(f"JSON:      {out_path}")
-    print(f"Excel:     {xlsx_path}")
+    print(f"JSON:      {json_path}")
+    print(f"Word:      {docx_path}")
     print()
 
     if summary.response_count == 0:
@@ -50,13 +51,6 @@ def main() -> None:
     print("-" * 40)
     for q_id, mean in sorted(summary.mean_likert.items()):
         print(f"  {q_id}: {mean}")
-
-    print()
-    print("Mean task times (seconds)")
-    print("-" * 40)
-    for task_id, mean_sec in sorted(summary.mean_task_times_sec.items()):
-        display = f"{mean_sec}s" if mean_sec is not None else "n/a"
-        print(f"  {task_id}: {display}")
 
     print()
     print("Per-participant SUS")

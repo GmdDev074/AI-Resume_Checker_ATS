@@ -50,6 +50,9 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE TABLE IF NOT EXISTS usability_responses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     participant_id TEXT NOT NULL,
+    full_name TEXT,
+    email TEXT,
+    phone TEXT,
     role TEXT,
     task_t1_success INTEGER NOT NULL DEFAULT 0,
     task_t2_success INTEGER NOT NULL DEFAULT 0,
@@ -105,8 +108,26 @@ class DatabaseService:
         """Create tables if they do not exist."""
         with self._connection() as conn:
             conn.executescript(SCHEMA_SQL)
+            self._migrate_usability_columns(conn)
             conn.commit()
         logger.info("Database initialized at %s", self._db_path)
+
+    @staticmethod
+    def _migrate_usability_columns(conn: sqlite3.Connection) -> None:
+        """Add newer usability columns to existing databases."""
+        existing = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(usability_responses)").fetchall()
+        }
+        for column, sql_type in (
+            ("full_name", "TEXT"),
+            ("email", "TEXT"),
+            ("phone", "TEXT"),
+        ):
+            if column not in existing:
+                conn.execute(
+                    f"ALTER TABLE usability_responses ADD COLUMN {column} {sql_type}"
+                )
 
     @contextmanager
     def _connection(self) -> Generator[sqlite3.Connection, None, None]:
@@ -295,6 +316,9 @@ class DatabaseService:
         now = datetime.utcnow().isoformat()
         columns = [
             "participant_id",
+            "full_name",
+            "email",
+            "phone",
             "role",
             "task_t1_success",
             "task_t2_success",
@@ -367,3 +391,28 @@ class DatabaseService:
                 (participant_id.strip(),),
             ).fetchone()
         return row is not None
+
+    def usability_email_exists(self, email: str) -> bool:
+        """Return True if this email already submitted a usability response."""
+        normalized = (email or "").strip().lower()
+        if not normalized:
+            return False
+        with self._connection() as conn:
+            row = conn.execute(
+                "SELECT 1 FROM usability_responses WHERE LOWER(email) = ? LIMIT 1",
+                (normalized,),
+            ).fetchone()
+        return row is not None
+
+    def next_participant_code(self) -> str:
+        """Generate the next study code (P01, P02, …)."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT participant_id FROM usability_responses"
+            ).fetchall()
+        numbers = []
+        for row in rows:
+            pid = str(row[0] or "")
+            if pid.startswith("P") and pid[1:].isdigit():
+                numbers.append(int(pid[1:]))
+        return f"P{max(numbers, default=0) + 1:02d}"

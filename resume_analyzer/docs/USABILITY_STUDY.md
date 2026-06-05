@@ -20,7 +20,7 @@ This ensures feedback is collected from users who experienced the complete syste
 |------|--------|
 | **Participants** | Target 5–10 (classmates, job seekers, reviewers) |
 | **Environment** | Local Streamlit or deployed Streamlit Cloud URL |
-| **ID** | Anonymous codes only: `P01`, `P02`, … (no real names) |
+| **ID** | Auto-assigned study code (`P01`, `P02`, …) plus name, email, optional phone |
 | **Duration** | ~15–20 minutes including tasks + survey |
 | **Instruments** | Task checklist, 6 Likert items, standard 10-item SUS |
 
@@ -49,11 +49,12 @@ Responses are saved in SQLite (`usability_responses` table). Use **any** of thes
 
 1. Open **Usability Study** (after you have unlocked it once via the workflow).
 2. At the **top of the page**, see the researcher banner with response count and mean SUS.
-3. Click **Download Excel (tables + charts)** — recommended for thesis:
-   - **Responses** sheet — all raw data
-   - **Summary** sheet — mean SUS, task %, Likert means
-   - **Charts** sheet — embedded bar charts (task success, Likert, SUS per participant)
-4. Optional: **Download CSV** or **Download JSON**
+3. Click **Download Microsoft Word (.docx)** — recommended for thesis:
+   - Summary metrics (n, mean SUS)
+   - Per-participant tables with **full question text** (tasks, Likert, SUS)
+   - Aggregate task success rates, Likert means, SUS by participant
+   - Optional comments section
+4. Optional: **Download JSON** (full structured data + aggregates)
 
 ### Method 2 — Command line (local project)
 
@@ -64,6 +65,7 @@ python resume_analyzer/scripts/export_usability_report.py
 Writes:
 
 - `resume_analyzer/data/evaluation/usability_responses.json`
+- `resume_analyzer/data/evaluation/usability_study_thesis.docx`
 - Prints task success %, mean Likert, mean SUS in the terminal
 
 ### Method 3 — Database file (local only)
@@ -72,15 +74,15 @@ Copy `resume_analyzer/resume_analyzer.db` and open with [DB Browser for SQLite](
 
 ### Streamlit Cloud note
 
-On deployed Streamlit, use **Method 1 (in-app download)** before the app reboots, or download the DB if you have server file access. Cloud instances may reset storage on redeploy — export CSV after each testing session.
+On deployed Streamlit, use **Method 1 (in-app download)** before the app reboots, or download the DB if you have server file access. Cloud instances may reset storage on redeploy — export Word or JSON after each testing session.
 
 ### What to put in the thesis
 
 | Source | Use for |
 |--------|---------|
-| CSV per-participant rows | Table: Participant, Role, Tasks OK, SUS score |
+| Word (.docx) export | Ready-made thesis tables (participants, tasks, Likert, SUS) |
 | JSON `mean_sus` | Aggregate usability score |
-| JSON `task_success_rates_pct` | Task completion bar chart / table |
+| JSON `task_success_rates_pct` | Task completion table |
 | JSON `mean_likert` | Satisfaction subscales |
 | Terminal output from export script | Quick copy-paste summary |
 
@@ -104,7 +106,7 @@ Copy summary tables into your thesis **Evaluation** chapter.
 
 ## Ethics
 
-- Anonymous participant IDs only
+- Collect name and email with participant consent; phone is optional
 - No hiring decisions automated — see [ETHICAL_AI.md](ETHICAL_AI.md)
 - Inform participants that data is for academic evaluation
 

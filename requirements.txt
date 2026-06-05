@@ -1,0 +1,2 @@
+# Streamlit Cloud and tools at repo root read this file.
+-r resume_analyzer/requirements.txt

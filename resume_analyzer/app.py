@@ -62,6 +62,7 @@ def init_session_state() -> None:
         "last_report_path": None,
         "report_generated": False,
         "usability_submitted": False,
+        "usability_submitting": False,
         "nav_page": "Dashboard",
     }
     for key, value in defaults.items():

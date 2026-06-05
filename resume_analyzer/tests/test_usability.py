@@ -5,6 +5,7 @@ import pytest
 from resume_analyzer.services.storage.usability_service import (
     UsabilityService,
     compute_sus_score,
+    docx_available,
 )
 
 
@@ -28,10 +29,11 @@ def test_compute_sus_score_range() -> None:
     assert score == 100.0
 
 
-def test_export_excel_bytes_produces_xlsx() -> None:
-    """Excel export returns a valid xlsx file (ZIP magic bytes)."""
+@pytest.mark.skipif(not docx_available(), reason="python-docx not installed")
+def test_export_docx_bytes_produces_docx() -> None:
+    """Word export returns a valid docx file (ZIP magic bytes)."""
     service = UsabilityService()
-    data = service.export_excel_bytes()
+    data = service.export_docx_bytes()
     assert isinstance(data, bytes)
     assert len(data) > 100
     assert data[:2] == b"PK"

@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import csv
+import importlib.util
 import io
 import json
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -116,14 +117,21 @@ def mark_report_generated() -> None:
     st.session_state["report_generated"] = True
 
 
-def openpyxl_available() -> bool:
-    """Return True if openpyxl is installed (required for Excel export)."""
+def docx_available() -> bool:
+    """Return True if python-docx is installed (required for Word export)."""
+    if importlib.util.find_spec("docx") is not None:
+        return True
     try:
-        import openpyxl  # noqa: F401
+        import docx  # noqa: F401
 
         return True
     except ImportError:
         return False
+
+
+def docx_install_hint() -> str:
+    """Return a pip command for the Python interpreter running the app."""
+    return f'"{sys.executable}" -m pip install python-docx'
 
 
 class UsabilityService:
@@ -200,200 +208,183 @@ class UsabilityService:
         """Full export payload as formatted JSON string for download."""
         return json.dumps(self.build_export_payload(), indent=2, ensure_ascii=False)
 
-    def _csv_fieldnames(self) -> List[str]:
-        """Column order for CSV and Excel raw export."""
-        return [
-            "id",
-            "participant_id",
-            "role",
-            "task_t1_success",
-            "task_t2_success",
-            "task_t3_success",
-            "task_t4_success",
-            "task_t5_success",
-            "task_t1_time_sec",
-            "task_t2_time_sec",
-            "task_t3_time_sec",
-            "task_t4_time_sec",
-            "task_t5_time_sec",
-            "likert_q1",
-            "likert_q2",
-            "likert_q3",
-            "likert_q4",
-            "likert_q5",
-            "likert_q6",
-            "sus_q1",
-            "sus_q2",
-            "sus_q3",
-            "sus_q4",
-            "sus_q5",
-            "sus_q6",
-            "sus_q7",
-            "sus_q8",
-            "sus_q9",
-            "sus_q10",
-            "sus_score",
-            "comments",
-            "analysis_id",
-            "created_at",
-        ]
+    @staticmethod
+    def _add_table(doc: Any, headers: List[str], rows: List[List[Any]]) -> None:
+        """Append a formatted table to a Word document."""
+        table = doc.add_table(rows=1 + len(rows), cols=len(headers))
+        table.style = "Table Grid"
+        for col, header in enumerate(headers):
+            table.rows[0].cells[col].text = str(header)
+        for r_idx, row_data in enumerate(rows, start=1):
+            for c_idx, value in enumerate(row_data):
+                table.rows[r_idx].cells[c_idx].text = "" if value is None else str(value)
+        doc.add_paragraph("")
 
-    def export_csv_text(self) -> str:
-        """Flat CSV of all responses (one row per participant) for thesis tables."""
-        rows = self.list_responses()
-        fieldnames = self._csv_fieldnames()
-        buffer = io.StringIO()
-        writer = csv.DictWriter(buffer, fieldnames=fieldnames, extrasaction="ignore")
-        writer.writeheader()
-        for row in rows:
-            writer.writerow({k: row.get(k, "") for k in fieldnames})
-        return buffer.getvalue()
-
-    def export_excel_bytes(self) -> bytes:
+    def export_docx_bytes(self) -> bytes:
         """
-        Build Excel workbook with raw data, summary metrics, and embedded charts.
-
-        Sheets: Responses, Summary, Charts (task %, Likert means, SUS by participant).
+        Build Microsoft Word (.docx) report for thesis evaluation chapter.
 
         Raises:
-            ImportError: If openpyxl is not installed.
+            ImportError: If python-docx is not installed.
         """
-        if not openpyxl_available():
+        if not docx_available():
             raise ImportError(
-                "openpyxl is required for Excel export. "
-                "Run: pip install openpyxl"
+                "python-docx is required for Word export. "
+                "Run: pip install python-docx"
             )
-        from openpyxl import Workbook
-        from openpyxl.chart import BarChart, Reference
-        from openpyxl.styles import Font
-        from openpyxl.utils import get_column_letter
+        from docx import Document
 
         rows = self.list_responses()
         summary = self.summarize()
-        fieldnames = self._csv_fieldnames()
+        exported_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-        wb = Workbook()
+        doc = Document()
+        doc.add_heading("Usability Study Results", level=0)
+        doc.add_paragraph(
+            "AI-Powered Resume Analyzer and Job Matching System — "
+            "evaluation export for academic reporting."
+        )
+        doc.add_paragraph(f"Exported: {exported_at}")
 
-        # --- Sheet 1: Responses ---
-        ws_data = wb.active
-        ws_data.title = "Responses"
-        ws_data.append(fieldnames)
-        for cell in ws_data[1]:
-            cell.font = Font(bold=True)
-        for row in rows:
-            ws_data.append([row.get(k, "") for k in fieldnames])
-        for col in range(1, len(fieldnames) + 1):
-            ws_data.column_dimensions[get_column_letter(col)].width = 14
+        doc.add_heading("Summary", level=1)
+        self._add_table(
+            doc,
+            ["Metric", "Value"],
+            [
+                ["Total responses", summary.response_count],
+                ["Mean SUS (0–100)", summary.mean_sus],
+            ],
+        )
 
-        # --- Sheet 2: Summary ---
-        ws_sum = wb.create_sheet("Summary")
-        ws_sum["A1"] = "Usability study export"
-        ws_sum["A1"].font = Font(bold=True, size=14)
-        ws_sum["A3"] = "Exported at (UTC)"
-        ws_sum["B3"] = datetime.now(timezone.utc).isoformat()
-        ws_sum["A4"] = "Response count"
-        ws_sum["B4"] = summary.response_count
-        ws_sum["A5"] = "Mean SUS (0-100)"
-        ws_sum["B5"] = summary.mean_sus
+        doc.add_heading("Participants (overview)", level=1)
+        participant_rows = [
+            [
+                r.get("participant_id"),
+                r.get("full_name") or "—",
+                r.get("email") or "—",
+                r.get("phone") or "—",
+                r.get("role"),
+                f"{sum(1 for i in range(1, 6) if r.get(f'task_t{i}_success'))}/5",
+                r.get("sus_score"),
+                (r.get("created_at") or "")[:19].replace("T", " "),
+            ]
+            for r in rows
+        ]
+        self._add_table(
+            doc,
+            ["Code", "Name", "Email", "Phone", "Role", "Tasks OK", "SUS", "Submitted (UTC)"],
+            participant_rows or [["—"] * 8],
+        )
 
-        ws_sum["A7"] = "Task"
-        ws_sum["B7"] = "Success %"
-        ws_sum["A7"].font = ws_sum["B7"].font = Font(bold=True)
-        r = 8
-        for task_id in sorted(summary.task_success_rates.keys()):
-            ws_sum.cell(r, 1, task_id)
-            ws_sum.cell(r, 2, summary.task_success_rates[task_id])
-            r += 1
+        doc.add_heading("Task checklist — responses by participant", level=1)
+        doc.add_paragraph(
+            "Each row shows whether the participant completed a workflow task and "
+            "how long it took (minutes)."
+        )
+        task_detail_rows: List[List[Any]] = []
+        for r in rows:
+            pid = r.get("full_name") or r.get("participant_id")
+            for i in range(1, 6):
+                time_sec = r.get(f"task_t{i}_time_sec")
+                time_label = "—"
+                if time_sec is not None and time_sec != "":
+                    time_label = f"{round(int(time_sec) / 60, 1)} min"
+                task_detail_rows.append(
+                    [
+                        pid,
+                        f"T{i}",
+                        TASK_LABELS[i - 1],
+                        "Yes" if r.get(f"task_t{i}_success") else "No",
+                        time_label,
+                    ]
+                )
+        self._add_table(
+            doc,
+            ["Participant", "Task", "Question", "Completed", "Time"],
+            task_detail_rows or [["—", "—", "—", "—", "—"]],
+        )
 
-        likert_start = r + 2
-        ws_sum.cell(likert_start, 1, "Likert question").font = Font(bold=True)
-        ws_sum.cell(likert_start, 2, "Mean (1-5)").font = Font(bold=True)
-        lr = likert_start + 1
+        doc.add_heading("Experience survey — responses by participant", level=1)
+        doc.add_paragraph("Scale: 1 = Strongly disagree, 5 = Strongly agree.")
+        likert_detail_rows: List[List[Any]] = []
+        for r in rows:
+            pid = r.get("full_name") or r.get("participant_id")
+            for i in range(1, len(LIKERT_QUESTIONS) + 1):
+                likert_detail_rows.append(
+                    [
+                        pid,
+                        f"Q{i}",
+                        LIKERT_QUESTIONS[i - 1],
+                        r.get(f"likert_q{i}", "—"),
+                    ]
+                )
+        self._add_table(
+            doc,
+            ["Participant", "Item", "Question", "Rating (1–5)"],
+            likert_detail_rows or [["—", "—", "—", "—"]],
+        )
+
+        doc.add_heading("SUS — responses by participant", level=1)
+        doc.add_paragraph("Scale: 1 = Strongly disagree, 5 = Strongly agree.")
+        sus_detail_rows: List[List[Any]] = []
+        for r in rows:
+            pid = r.get("full_name") or r.get("participant_id")
+            for i in range(1, len(SUS_QUESTIONS) + 1):
+                sus_detail_rows.append(
+                    [
+                        pid,
+                        f"S{i}",
+                        SUS_QUESTIONS[i - 1],
+                        r.get(f"sus_q{i}", "—"),
+                    ]
+                )
+        self._add_table(
+            doc,
+            ["Participant", "Item", "Question", "Rating (1–5)"],
+            sus_detail_rows or [["—", "—", "—", "—"]],
+        )
+
+        doc.add_heading("Task success rates (aggregate)", level=1)
+        doc.add_paragraph("Scale: 0% (none completed) to 100% (all participants).")
+        task_rows = [
+            [tid, TASK_LABELS[int(tid.replace("T", "")) - 1], f"{rate}%"]
+            for tid, rate in sorted(summary.task_success_rates.items())
+        ]
+        self._add_table(
+            doc,
+            ["Task", "Question", "Success rate"],
+            task_rows or [["—", "—", "—"]],
+        )
+
+        doc.add_heading("Experience survey — mean scores (aggregate)", level=1)
+        doc.add_paragraph("Scale: Min 1 (Strongly disagree) — Max 5 (Strongly agree).")
+        likert_rows = []
         for q_id in sorted(summary.mean_likert.keys()):
             q_num = int(q_id.replace("Q", "")) - 1
-            label = LIKERT_QUESTIONS[q_num][:48] if q_num < len(LIKERT_QUESTIONS) else q_id
-            ws_sum.cell(lr, 1, f"{q_id}: {label}")
-            ws_sum.cell(lr, 2, summary.mean_likert[q_id])
-            lr += 1
+            label = LIKERT_QUESTIONS[q_num] if q_num < len(LIKERT_QUESTIONS) else q_id
+            likert_rows.append([q_id, label, summary.mean_likert[q_id]])
+        self._add_table(doc, ["Item", "Question", "Mean (1–5)"], likert_rows or [["—", "—", "—"]])
 
-        # --- Sheet 3: Charts ---
-        ws_ch = wb.create_sheet("Charts")
-        ws_ch["A1"] = "Thesis charts — open in Excel; graphs update with data"
-        ws_ch["A1"].font = Font(bold=True)
+        doc.add_heading("SUS scores by participant (aggregate)", level=1)
+        doc.add_paragraph("System Usability Scale: 0–100 (higher is better).")
+        sus_rows = [
+            [r.get("full_name") or r.get("participant_id"), r.get("sus_score")]
+            for r in rows
+        ]
+        self._add_table(doc, ["Participant", "SUS score"], sus_rows or [["—", "—"]])
 
-        # Chart 1: Task success rates
-        ws_ch["A3"] = "Task"
-        ws_ch["B3"] = "Success %"
-        ws_ch["A3"].font = ws_ch["B3"].font = Font(bold=True)
-        task_row = 4
-        for task_id in sorted(summary.task_success_rates.keys()):
-            label = TASK_LABELS[int(task_id.replace("T", "")) - 1][:40]
-            ws_ch.cell(task_row, 1, f"{task_id} {label}")
-            ws_ch.cell(task_row, 2, summary.task_success_rates[task_id])
-            task_row += 1
-
-        if summary.task_success_rates:
-            chart_tasks = BarChart()
-            chart_tasks.type = "col"
-            chart_tasks.title = "Task success rate (%)"
-            chart_tasks.y_axis.title = "Percent"
-            chart_tasks.x_axis.title = "Task"
-            data_ref = Reference(ws_ch, min_col=2, min_row=3, max_row=task_row - 1)
-            cats_ref = Reference(ws_ch, min_col=1, min_row=4, max_row=task_row - 1)
-            chart_tasks.add_data(data_ref, titles_from_data=True)
-            chart_tasks.set_categories(cats_ref)
-            chart_tasks.height = 10
-            chart_tasks.width = 18
-            ws_ch.add_chart(chart_tasks, "D3")
-
-        # Chart 2: Mean Likert
-        likert_chart_row = task_row + 3
-        ws_ch.cell(likert_chart_row, 1, "Question").font = Font(bold=True)
-        ws_ch.cell(likert_chart_row, 2, "Mean").font = Font(bold=True)
-        lr2 = likert_chart_row + 1
-        for q_id in sorted(summary.mean_likert.keys()):
-            ws_ch.cell(lr2, 1, q_id)
-            ws_ch.cell(lr2, 2, summary.mean_likert[q_id])
-            lr2 += 1
-
-        if summary.mean_likert:
-            chart_likert = BarChart()
-            chart_likert.type = "col"
-            chart_likert.title = "Mean Likert scores (1-5)"
-            chart_likert.y_axis.title = "Mean score"
-            data_ref = Reference(ws_ch, min_col=2, min_row=likert_chart_row, max_row=lr2 - 1)
-            cats_ref = Reference(ws_ch, min_col=1, min_row=likert_chart_row + 1, max_row=lr2 - 1)
-            chart_likert.add_data(data_ref, titles_from_data=True)
-            chart_likert.set_categories(cats_ref)
-            chart_likert.height = 10
-            chart_likert.width = 18
-            ws_ch.add_chart(chart_likert, f"D{likert_chart_row}")
-
-        # Chart 3: SUS per participant
-        sus_start = lr2 + 3
-        ws_ch.cell(sus_start, 1, "Participant").font = Font(bold=True)
-        ws_ch.cell(sus_start, 2, "SUS score").font = Font(bold=True)
-        sr = sus_start + 1
-        for row in reversed(rows):
-            ws_ch.cell(sr, 1, row.get("participant_id"))
-            ws_ch.cell(sr, 2, row.get("sus_score"))
-            sr += 1
-
+        doc.add_heading("Optional comments", level=1)
         if rows:
-            chart_sus = BarChart()
-            chart_sus.type = "col"
-            chart_sus.title = "SUS score by participant"
-            chart_sus.y_axis.title = "SUS (0-100)"
-            data_ref = Reference(ws_ch, min_col=2, min_row=sus_start, max_row=sr - 1)
-            cats_ref = Reference(ws_ch, min_col=1, min_row=sus_start + 1, max_row=sr - 1)
-            chart_sus.add_data(data_ref, titles_from_data=True)
-            chart_sus.set_categories(cats_ref)
-            chart_sus.height = 10
-            chart_sus.width = 18
-            ws_ch.add_chart(chart_sus, f"D{sus_start}")
+            for r in rows:
+                comment = (r.get("comments") or "").strip()
+                if comment:
+                    label = r.get("full_name") or r.get("participant_id")
+                    doc.add_paragraph(f"{label}: {comment}")
+        else:
+            doc.add_paragraph("No comments recorded.")
 
         buffer = io.BytesIO()
-        wb.save(buffer)
+        doc.save(buffer)
         return buffer.getvalue()
 
     def thesis_summary_rows(self) -> List[Dict[str, Any]]:
@@ -404,7 +395,10 @@ class UsabilityService:
             tasks_ok = sum(1 for i in range(1, 6) if row.get(f"task_t{i}_success"))
             result.append(
                 {
-                    "Participant": row.get("participant_id"),
+                    "Code": row.get("participant_id"),
+                    "Name": row.get("full_name") or "—",
+                    "Email": row.get("email") or "—",
+                    "Phone": row.get("phone") or "—",
                     "Role": row.get("role"),
                     "Tasks OK": f"{tasks_ok}/5",
                     "SUS": row.get("sus_score"),
