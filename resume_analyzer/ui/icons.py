@@ -22,6 +22,7 @@ MATERIAL = {
     "job": "business_center",
     "resume": "article",
     "search": "search",
+    "feedback": "rate_review",
 }
 
 

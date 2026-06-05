@@ -48,7 +48,7 @@ This document maps the **written proposal** to the **implemented system** for ac
 | Skill extraction precision/recall/F1 | `python resume_analyzer/scripts/run_evaluation.py` |
 | Cosine similarity (semantic match) | Automatic during analysis |
 | Keyword baseline comparison | `keyword_baseline_score` on each analysis; evaluation script |
-| Usability testing | Document in thesis (questionnaire / task completion) — not automated |
+| Usability testing | In-app survey (`ui/pages/usability_page.py`); export via `scripts/export_usability_report.py`; collect 5–10 participants for thesis |
 
 Output: `data/evaluation/latest_report.json`
 

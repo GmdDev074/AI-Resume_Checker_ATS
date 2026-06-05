@@ -70,13 +70,13 @@ Recent advancements in NLP and AI have significantly improved automated resume s
 
 ## Requirements progress
 
-Track proposal compliance in **[PROJECT_STATUS.md](PROJECT_STATUS.md)** (easy to update). Summary as of **2025-06-05**:
+Track proposal compliance in **[PROJECT_STATUS.md](PROJECT_STATUS.md)** (easy to update). Summary as of **2025-06-06**:
 
 | Status | Count | Meaning |
 |--------|-------|---------|
 | ✅ Achieved | 21 | Meets proposal intent in code/docs |
-| 🟡 Partial | 5 | Started; needs data, study, or depth |
-| ⬜ Remaining | 2 | Thesis / evaluation tasks not done in repo |
+| 🟡 Partial | 6 | Started; needs data, study, or depth |
+| ⬜ Remaining | 1 | Thesis / evaluation tasks not done in repo |
 | ➖ Not planned | 3 | Documented deviation (e.g. no Gemini/LSA) |
 
 ### ✅ Achieved (high level)
@@ -93,6 +93,7 @@ Track proposal compliance in **[PROJECT_STATUS.md](PROJECT_STATUS.md)** (easy to
 
 | Item | Gap | Next step |
 |------|-----|-----------|
+| **Usability study (EV-04)** | In-app survey implemented | Complete workflow → **Usability Study** page; collect 5–10 participants; `python resume_analyzer/scripts/export_usability_report.py` |
 | **Kaggle dataset** | Import script exists; full CSV not in repo | Download [Resume Dataset](https://www.kaggle.com/datasets/gauravduttakiit/resume-dataset) → `data/evaluation/kaggle/Resume.csv` → run `import_kaggle_csv.py` |
 | **Hugging Face job data** | Only local sample JSON | Add more JDs or HF download script |
 | **Labeled data scale** | 55 samples vs large Kaggle corpus | Expand labels; manual verify 10–20 rows |
@@ -103,7 +104,6 @@ Track proposal compliance in **[PROJECT_STATUS.md](PROJECT_STATUS.md)** (easy to
 
 | Item | Action |
 |------|--------|
-| **User usability testing** | Run 5–10 user tasks + questionnaire; report in thesis |
 | **Deep comparison with Tian / ResumeAtlas** | Related-work table + discussion (no full replication required) |
 
 ### ➖ Deliberate deviations (document in thesis)
@@ -427,6 +427,7 @@ Sidebar pills show progress: resume loaded → job set → analysis complete.
 | Ethical AI | [resume_analyzer/docs/ETHICAL_AI.md](resume_analyzer/docs/ETHICAL_AI.md) |
 | Database schema | [resume_analyzer/docs/DATABASE_SCHEMA.md](resume_analyzer/docs/DATABASE_SCHEMA.md) |
 | Evaluation datasets | [resume_analyzer/data/evaluation/README.md](resume_analyzer/data/evaluation/README.md) |
+| Usability study protocol | [resume_analyzer/docs/USABILITY_STUDY.md](resume_analyzer/docs/USABILITY_STUDY.md) |
 
 | Dataset | File | Samples |
 |---------|------|---------|

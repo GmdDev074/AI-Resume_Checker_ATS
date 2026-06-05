@@ -6,6 +6,7 @@ import streamlit as st
 
 from resume_analyzer.services.resume_pipeline import ResumePipeline
 from resume_analyzer.services.storage.database_service import DatabaseService
+from resume_analyzer.services.storage.usability_service import mark_report_generated
 from resume_analyzer.ui.components.data_table import render_data_table
 from resume_analyzer.ui.components.layout import render_empty_state, render_page_header, render_section
 from resume_analyzer.ui.icons import material
@@ -56,7 +57,12 @@ def render_reports_page(pipeline: ResumePipeline, db: DatabaseService) -> None:
                     aid = st.session_state.get("last_analysis_id")
                     if aid:
                         db.save_report(aid, report_path)
+                    mark_report_generated()
                     st.success(f"Report generated: {report_path.name}")
+                    st.info(
+                        "Workflow complete. You can now open **Usability Study** in the sidebar "
+                        "to submit anonymous feedback."
+                    )
 
             report_path = st.session_state.get("last_report_path")
             if report_path and Path(report_path).exists():

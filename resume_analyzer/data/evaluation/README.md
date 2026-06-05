@@ -39,6 +39,18 @@ python resume_analyzer/scripts/run_evaluation.py
 pytest resume_analyzer/tests/test_evaluation.py
 ```
 
+## Usability study (EV-04)
+
+Collect responses in the app: **Usability Study** (unlocked after PDF report generation).
+
+Export for thesis:
+
+```bash
+python resume_analyzer/scripts/export_usability_report.py
+```
+
+Output: `usability_responses.json` — see [docs/USABILITY_STUDY.md](../docs/USABILITY_STUDY.md).
+
 ## Label format
 
 ```json

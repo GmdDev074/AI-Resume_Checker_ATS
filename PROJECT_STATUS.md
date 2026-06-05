@@ -1,7 +1,7 @@
 # Project requirements & progress tracker
 
 **Project:** AI-Powered Resume Analyzer and Job Matching System  
-**Last updated:** 2025-06-05 *(change this date when you edit)*  
+**Last updated:** 2025-06-06 *(change this date when you edit)*  
 **Maintainer:** [GmdDev074](https://github.com/GmdDev074)
 
 Use this file as the **single place to update** proposal compliance. Keep the [README](README.md) summary in sync when statuses change.
@@ -34,11 +34,11 @@ Use this file as the **single place to update** proposal compliance. Keep the [R
 | Functional requirements | 10 | 0 | 0 | 0 |
 | Technology & methodology | 5 | 1 | 0 | 3 |
 | Data acquisition | 1 | 3 | 0 | 0 |
-| Evaluation | 3 | 0 | 2 | 0 |
+| Evaluation | 3 | 1 | 1 | 0 |
 | Non-functional & ethics | 2 | 1 | 0 | 0 |
-| **Totals** | **21** | **5** | **2** | **3** |
+| **Totals** | **21** | **6** | **1** | **3** |
 
-**Overall (proposal-mandatory items only, excluding ➖):** ~84% complete · **5** partial · **2** remaining  
+**Overall (proposal-mandatory items only, excluding ➖):** ~88% complete · **6** partial · **1** remaining  
 
 *Recalculate when you edit tables: count rows per status.*
 
@@ -96,7 +96,7 @@ Use this file as the **single place to update** proposal compliance. Keep the [R
 | EV-01 | Skill extraction accuracy | ✅ | `scripts/run_evaluation.py` | See `latest_report.json` (e.g. F1 ~0.99 on 55 samples) |
 | EV-02 | Cosine similarity for job match | ✅ | Analysis pipeline | Shown as semantic similarity % |
 | EV-03 | Baseline **keyword** matching comparison | ✅ | `baseline_matcher.py`, Analysis UI | Hybrid vs keyword baseline |
-| EV-04 | **User testing** (usability) | ⬜ | Thesis chapter only | Plan questionnaire / task timing (5–10 users) |
+| EV-04 | **User testing** (usability) | 🟡 | `ui/pages/usability_page.py`, `docs/USABILITY_STUDY.md` | In-app survey unlocked after PDF report; collect 5–10 participants; run `export_usability_report.py` |
 | EV-05 | Comparison with Tian / ResumeAtlas metrics | ⬜ | Discussion section | Qualitative comparison; no full replication |
 
 **Latest automated metrics** (`resume_analyzer/data/evaluation/latest_report.json`):
@@ -132,6 +132,7 @@ Use this file as the **single place to update** proposal compliance. Keep the [R
 | EX-04 | Optional FastAPI REST API | ✅ | `api/main.py` |
 | EX-05 | Dashboard analytics | ✅ | `ui/pages/dashboard.py` |
 | EX-06 | pytest test suite | ✅ | `tests/` |
+| EX-07 | In-app usability study (SUS + Likert) | 🟡 | `usability_page.py`, `usability_service.py` | Gated until report generated; needs participant data |
 
 ---
 
@@ -139,7 +140,7 @@ Use this file as the **single place to update** proposal compliance. Keep the [R
 
 Use this checklist for thesis completion:
 
-- [ ] **EV-04** — Conduct usability study (tasks + short survey); add results table to thesis  
+- [ ] **EV-04** — Collect 5–10 usability responses in app; export via `export_usability_report.py`; add results table to thesis  
 - [ ] **DA-01** — Import full Kaggle `Resume.csv` and document dataset size in methodology  
 - [ ] **DA-02** — Add more job descriptions (HF or manual) for domain diversity  
 - [ ] **DA-04** — Grow labeled set (target: 100+ verified samples) and re-run evaluation  

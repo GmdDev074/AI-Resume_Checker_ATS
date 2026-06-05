@@ -46,6 +46,43 @@ CREATE TABLE IF NOT EXISTS reports (
     created_at TEXT NOT NULL,
     FOREIGN KEY (analysis_id) REFERENCES analysis_history(id)
 );
+
+CREATE TABLE IF NOT EXISTS usability_responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    participant_id TEXT NOT NULL,
+    role TEXT,
+    task_t1_success INTEGER NOT NULL DEFAULT 0,
+    task_t2_success INTEGER NOT NULL DEFAULT 0,
+    task_t3_success INTEGER NOT NULL DEFAULT 0,
+    task_t4_success INTEGER NOT NULL DEFAULT 0,
+    task_t5_success INTEGER NOT NULL DEFAULT 0,
+    task_t1_time_sec INTEGER,
+    task_t2_time_sec INTEGER,
+    task_t3_time_sec INTEGER,
+    task_t4_time_sec INTEGER,
+    task_t5_time_sec INTEGER,
+    likert_q1 INTEGER,
+    likert_q2 INTEGER,
+    likert_q3 INTEGER,
+    likert_q4 INTEGER,
+    likert_q5 INTEGER,
+    likert_q6 INTEGER,
+    sus_q1 INTEGER,
+    sus_q2 INTEGER,
+    sus_q3 INTEGER,
+    sus_q4 INTEGER,
+    sus_q5 INTEGER,
+    sus_q6 INTEGER,
+    sus_q7 INTEGER,
+    sus_q8 INTEGER,
+    sus_q9 INTEGER,
+    sus_q10 INTEGER,
+    sus_score REAL,
+    comments TEXT,
+    analysis_id INTEGER,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (analysis_id) REFERENCES analysis_history(id)
+);
 """
 
 
@@ -244,3 +281,89 @@ class DatabaseService:
                 (limit,),
             ).fetchall()
         return [dict(row) for row in rows]
+
+    def save_usability_response(self, payload: Dict[str, Any]) -> int:
+        """
+        Insert a usability study survey response.
+
+        Args:
+            payload: Field dictionary from UsabilityService / survey form.
+
+        Returns:
+            New record id.
+        """
+        now = datetime.utcnow().isoformat()
+        columns = [
+            "participant_id",
+            "role",
+            "task_t1_success",
+            "task_t2_success",
+            "task_t3_success",
+            "task_t4_success",
+            "task_t5_success",
+            "task_t1_time_sec",
+            "task_t2_time_sec",
+            "task_t3_time_sec",
+            "task_t4_time_sec",
+            "task_t5_time_sec",
+            "likert_q1",
+            "likert_q2",
+            "likert_q3",
+            "likert_q4",
+            "likert_q5",
+            "likert_q6",
+            "sus_q1",
+            "sus_q2",
+            "sus_q3",
+            "sus_q4",
+            "sus_q5",
+            "sus_q6",
+            "sus_q7",
+            "sus_q8",
+            "sus_q9",
+            "sus_q10",
+            "sus_score",
+            "comments",
+            "analysis_id",
+            "created_at",
+        ]
+        values = [payload.get(col) for col in columns[:-1]] + [now]
+        placeholders = ", ".join("?" for _ in columns)
+        col_sql = ", ".join(columns)
+        with self._connection() as conn:
+            cursor = conn.execute(
+                f"INSERT INTO usability_responses ({col_sql}) VALUES ({placeholders})",
+                values,
+            )
+            conn.commit()
+            return int(cursor.lastrowid)
+
+    def get_usability_responses(self, limit: int = 500) -> List[Dict[str, Any]]:
+        """
+        Fetch usability survey responses.
+
+        Args:
+            limit: Maximum rows.
+
+        Returns:
+            List of response dicts.
+        """
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM usability_responses
+                ORDER BY id DESC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def participant_id_exists(self, participant_id: str) -> bool:
+        """Return True if participant_id was already used."""
+        with self._connection() as conn:
+            row = conn.execute(
+                "SELECT 1 FROM usability_responses WHERE participant_id = ? LIMIT 1",
+                (participant_id.strip(),),
+            ).fetchone()
+        return row is not None

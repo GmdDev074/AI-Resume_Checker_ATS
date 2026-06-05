@@ -100,7 +100,12 @@ def render_workflow_sidebar() -> None:
     st.sidebar.markdown(html, unsafe_allow_html=True)
 
 
-def render_status_pills(has_resume: bool, has_job: bool, has_analysis: bool) -> None:
+def render_status_pills(
+    has_resume: bool,
+    has_job: bool,
+    has_analysis: bool,
+    has_report: bool = False,
+) -> None:
     """
     Show session progress in sidebar.
 
@@ -108,6 +113,7 @@ def render_status_pills(has_resume: bool, has_job: bool, has_analysis: bool) -> 
         has_resume: Resume parsed.
         has_job: Job loaded.
         has_analysis: Analysis complete.
+        has_report: PDF report generated (unlocks usability study).
     """
     def pill(ok: bool, label: str) -> str:
         cls = "status-pill done" if ok else "status-pill"
@@ -119,6 +125,9 @@ def render_status_pills(has_resume: bool, has_job: bool, has_analysis: bool) -> 
 
     st.sidebar.markdown('<p class="section-label">Session</p>', unsafe_allow_html=True)
     st.sidebar.markdown(
-        pill(has_resume, "Resume") + pill(has_job, "Job") + pill(has_analysis, "Analysis"),
+        pill(has_resume, "Resume")
+        + pill(has_job, "Job")
+        + pill(has_analysis, "Analysis")
+        + pill(has_report, "Report"),
         unsafe_allow_html=True,
     )
