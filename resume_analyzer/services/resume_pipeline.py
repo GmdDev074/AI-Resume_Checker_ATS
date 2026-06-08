@@ -12,7 +12,10 @@ from resume_analyzer.services.extraction.education_extractor import EducationExt
 from resume_analyzer.services.extraction.experience_extractor import ExperienceExtractor
 from resume_analyzer.services.extraction.skill_extractor import SkillExtractor
 from resume_analyzer.services.matching.job_matching_service import JobMatchingService
+from resume_analyzer.services.document.doc_parser import DocParser
+from resume_analyzer.services.document.docx_parser import DocxParser
 from resume_analyzer.services.pdf.pdf_parser import PDFParser
+from resume_analyzer.utils.file_utils import resume_file_kind
 from resume_analyzer.services.recommendation.recommendation_service import RecommendationService
 from resume_analyzer.services.report.pdf_report_generator import PDFReportGenerator
 
@@ -23,6 +26,8 @@ class ResumePipeline:
     def __init__(self) -> None:
         """Wire all services for the analysis workflow."""
         self.pdf_parser = PDFParser()
+        self.doc_parser = DocParser()
+        self.docx_parser = DocxParser()
         self.contact_extractor = ContactExtractor()
         self.skill_extractor = SkillExtractor()
         self.education_extractor = EducationExtractor()
@@ -39,10 +44,10 @@ class ResumePipeline:
         is_text: bool = False,
     ) -> ResumeData:
         """
-        Parse resume from PDF bytes or plain text.
+        Parse resume from PDF/Word bytes or plain text.
 
         Args:
-            source: PDF bytes or text string.
+            source: PDF/Word bytes or text string.
             file_name: Original filename.
             is_text: True if source is already text.
 
@@ -52,7 +57,7 @@ class ResumePipeline:
         if is_text:
             text = str(source)
         else:
-            text = self.pdf_parser.extract_from_upload(bytes(source))
+            text = self._extract_document_text(bytes(source), file_name)
 
         contact = self.contact_extractor.extract(text)
         skills = self.skill_extractor.extract(text)
@@ -67,6 +72,19 @@ class ResumePipeline:
             experience=experience,
             total_experience_years=total_years,
             file_name=file_name,
+        )
+
+    def _extract_document_text(self, data: bytes, file_name: Optional[str]) -> str:
+        """Extract text from uploaded PDF or Word document bytes."""
+        kind = resume_file_kind(file_name or "")
+        if kind == "docx":
+            return self.docx_parser.extract_from_upload(data)
+        if kind == "doc":
+            return self.doc_parser.extract_from_upload(data)
+        if kind == "pdf" or kind is None:
+            return self.pdf_parser.extract_from_upload(data)
+        raise ValueError(
+            "Unsupported file type. Upload a PDF or Word (.doc, .docx) resume."
         )
 
     def build_job(self, job_text: str, title: Optional[str] = None) -> JobDescription:

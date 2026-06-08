@@ -2,7 +2,56 @@
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
+
+RESUME_UPLOAD_EXTENSIONS: Tuple[str, ...] = (".pdf", ".docx", ".doc")
+
+# MIME types help Windows/Electron file pickers show legacy .doc files reliably.
+RESUME_UPLOAD_MIME_TYPES: Tuple[str, ...] = (
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+)
+
+RESUME_UPLOAD_FILE_TYPES: Tuple[str, ...] = RESUME_UPLOAD_MIME_TYPES + (
+    "pdf",
+    "doc",
+    "docx",
+)
+
+
+def is_resume_upload(filename: str) -> bool:
+    """
+    Return True if filename has a supported resume upload extension.
+
+    Args:
+        filename: Original file name.
+
+    Returns:
+        True for PDF or Word (.doc, .docx) files.
+    """
+    lower = filename.lower()
+    return any(lower.endswith(ext) for ext in RESUME_UPLOAD_EXTENSIONS)
+
+
+def resume_file_kind(filename: str) -> str | None:
+    """
+    Classify a resume upload by extension.
+
+    Args:
+        filename: Original file name.
+
+    Returns:
+        ``pdf``, ``doc``, ``docx``, or None if unsupported.
+    """
+    lower = filename.lower()
+    if lower.endswith(".pdf"):
+        return "pdf"
+    if lower.endswith(".docx"):
+        return "docx"
+    if lower.endswith(".doc"):
+        return "doc"
+    return None
 
 
 def ensure_dir(path: Path) -> Path:

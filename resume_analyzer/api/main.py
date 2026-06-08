@@ -16,6 +16,7 @@ from pydantic import BaseModel
 
 from resume_analyzer.services.resume_pipeline import ResumePipeline
 from resume_analyzer.services.storage.database_service import DatabaseService
+from resume_analyzer.utils.file_utils import is_resume_upload
 
 app = FastAPI(
     title="Resume Analyzer API",
@@ -50,18 +51,21 @@ async def analyze_resume(
     job_title: Optional[str] = Form(None),
 ) -> AnalysisResponse:
     """
-    Analyze uploaded resume PDF against job description.
+    Analyze uploaded resume (PDF or Word) against job description.
 
     Args:
         job_description: Job description text.
-        file: Resume PDF file.
+        file: Resume PDF or Word (.doc, .docx) file.
         job_title: Optional job title.
 
     Returns:
         Analysis scores and skill breakdown.
     """
-    if not file.filename or not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="PDF file required.")
+    if not file.filename or not is_resume_upload(file.filename):
+        raise HTTPException(
+            status_code=400,
+            detail="PDF or Word (.doc, .docx) file required.",
+        )
     data = await file.read()
     try:
         resume = pipeline.parse_resume(data, file_name=file.filename)

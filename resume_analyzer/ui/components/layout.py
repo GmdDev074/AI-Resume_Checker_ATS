@@ -87,7 +87,7 @@ def render_empty_state(message: str, action_hint: str = "") -> None:
 def render_workflow_sidebar() -> None:
     """Render numbered workflow steps in the sidebar."""
     steps = [
-        "Upload resume (PDF)",
+        "Upload resume (PDF/Word)",
         "Enter job description",
         "Run analysis",
         "Export PDF report",

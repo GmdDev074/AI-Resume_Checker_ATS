@@ -5,9 +5,13 @@ import streamlit as st
 from resume_analyzer.config.settings import get_settings
 from resume_analyzer.services.resume_pipeline import ResumePipeline
 from resume_analyzer.services.storage.database_service import DatabaseService
+from resume_analyzer.ui.components.file_picker import (
+    pick_resume_files_native,
+    windows_file_picker_available,
+)
 from resume_analyzer.ui.components.layout import render_empty_state, render_page_header, render_section
 from resume_analyzer.ui.icons import material
-from resume_analyzer.utils.file_utils import read_json
+from resume_analyzer.utils.file_utils import is_resume_upload, read_json
 from resume_analyzer.utils.validators import validate_job_description, validate_pdf_size
 
 
@@ -52,12 +56,42 @@ def render_resume_upload(pipeline: ResumePipeline, db: DatabaseService) -> None:
 
     with col_resume:
         render_section("Resume document(s)")
+        st.caption("Accepted formats: PDF, DOC, DOCX")
+
+        if "native_resume_files" not in st.session_state:
+            st.session_state["native_resume_files"] = []
+
         uploaded_files = st.file_uploader(
-            "PDF files",
-            type=["pdf"],
+            "Drag and drop files here",
+            type=None,
             accept_multiple_files=True,
             label_visibility="collapsed",
+            key="resume_uploader_all_types",
         )
+
+        if windows_file_picker_available():
+            pick_col, clear_col = st.columns(2)
+            with pick_col:
+                if st.button(
+                    "Browse with Windows picker",
+                    use_container_width=True,
+                    icon=material("upload"),
+                    help="Use this if Word (.doc) files do not appear in the browser file dialog.",
+                ):
+                    selected = pick_resume_files_native()
+                    if selected:
+                        st.session_state["native_resume_files"] = selected
+                        st.rerun()
+            with clear_col:
+                if st.session_state["native_resume_files"] and st.button(
+                    "Clear selected files",
+                    use_container_width=True,
+                ):
+                    st.session_state["native_resume_files"] = []
+                    st.rerun()
+
+            for item in st.session_state["native_resume_files"]:
+                st.markdown(f"- {item['name']}")
         use_sample = st.toggle("Use sample resume (development / demo)", value=False)
         if use_sample:
             sample_path = settings.sample_resumes_dir / "sample_resume_01.txt"
@@ -90,26 +124,43 @@ def render_resume_upload(pipeline: ResumePipeline, db: DatabaseService) -> None:
                     is_text=True,
                 )
             )
-        elif uploaded_files:
-            for uploaded in uploaded_files:
-                data = uploaded.read()
-                ok, msg = validate_pdf_size(len(data), settings.max_upload_mb)
-                if not ok:
-                    st.error(f"{uploaded.name}: {msg}")
-                    continue
-                try:
-                    resumes.append(pipeline.parse_resume(data, file_name=uploaded.name))
-                except ValueError as exc:
-                    st.error(f"{uploaded.name}: {exc}")
         else:
-            st.warning("Please upload a PDF or enable the sample resume.")
-            return
+            selected_files: list[tuple[str, bytes]] = []
+            if uploaded_files:
+                for uploaded in uploaded_files:
+                    selected_files.append((uploaded.name, uploaded.read()))
+            for item in st.session_state.get("native_resume_files", []):
+                selected_files.append((item["name"], item["data"]))
+
+            if selected_files:
+                for file_name, data in selected_files:
+                    if not is_resume_upload(file_name):
+                        st.error(
+                            f"{file_name}: Unsupported format. "
+                            "Please upload a PDF, DOC, or DOCX file."
+                        )
+                        continue
+                    ok, msg = validate_pdf_size(len(data), settings.max_upload_mb)
+                    if not ok:
+                        st.error(f"{file_name}: {msg}")
+                        continue
+                    try:
+                        resumes.append(pipeline.parse_resume(data, file_name=file_name))
+                    except ValueError as exc:
+                        st.error(f"{file_name}: {exc}")
+            else:
+                st.warning(
+                    "Please upload a PDF/Word resume, use **Browse with Windows picker**, "
+                    "or enable the sample resume."
+                )
+                return
 
         if not resumes:
             return
 
         job = pipeline.build_job(job_text, title=job_title)
         st.session_state["resumes"] = resumes
+        st.session_state["native_resume_files"] = []
         st.session_state["job"] = job
         st.session_state["job_text"] = job.raw_text
         st.success(
